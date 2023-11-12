@@ -1,0 +1,15 @@
+---
+import { ReactGame } from "../components/ReactGame";
+import Layout from "../layouts/Layout.astro";
+
+const CountriesAndCapitols = {
+  Germany: "Berlin",
+  Poland: "Warsaw",
+  France: "Paris",
+  Italy: "Rome",
+};
+---
+
+<Layout title="Welcome to Astro.">
+  <ReactGame client:only gameData={CountriesAndCapitols} />
+</Layout>
