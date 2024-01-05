@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { cn } from "../utils/cn";
 import { Button } from "./Button";
+import { cn } from "@/utils/cn";
 
 interface IProps {
   gameData: Record<string, string>;

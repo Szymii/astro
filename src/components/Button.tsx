@@ -1,5 +1,5 @@
+import { cn } from "@/utils/cn";
 import type { ComponentProps } from "react";
-import { cn } from "../utils/cn";
 
 type OverrideProps<T, TOverridden> = Omit<T, keyof TOverridden> & TOverridden;
 
