@@ -17,5 +17,6 @@ export const useSuspense = <T>({ url }: Props) => {
     cacheMap.set(url, data);
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-throw-literal
   throw promise;
 };

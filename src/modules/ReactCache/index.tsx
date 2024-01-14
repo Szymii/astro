@@ -37,7 +37,7 @@ export const ReactCache = () => {
   );
 };
 
-export const Section = ({ tag }: { tag: string }) => {
+const Section = ({ tag }: { tag: string }) => {
   const { data } = useSuspense<{ _id: string }[]>({
     url: `https://cataas.com/api/cats?tags=${tag}`,
   });
