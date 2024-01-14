@@ -1,0 +1,8 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ReactCache } from "@/modules/ReactCache";
+---
+
+<Layout title="Welcome to Astro.">
+  <ReactCache client:only />
+</Layout>
