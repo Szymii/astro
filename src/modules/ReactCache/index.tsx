@@ -42,8 +42,6 @@ export const Section = ({ tag }: { tag: string }) => {
     url: `https://cataas.com/api/cats?tags=${tag}`,
   });
 
-  if (!data) return null;
-
   return (
     <div className="flex gap-4">
       {data.slice(0, 3).map(({ _id }) => (

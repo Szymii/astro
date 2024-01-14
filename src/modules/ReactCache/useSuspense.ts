@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 interface Props {
   url: string;
 }
@@ -7,26 +5,17 @@ interface Props {
 const cacheMap = new Map<string, unknown>();
 
 export const useSuspense = <T>({ url }: Props) => {
-  const [data, setData] = useState<T | null>((cacheMap.get(url) as T) || null);
+  const value = cacheMap.get(url) || null;
 
-  const fetchData = async (url: string) => {
-    try {
-      const result = await fetch(url);
-      if (result.ok) {
-        const data = await result.json();
-        cacheMap.set(url, data);
-        setData(data);
-      }
-    } catch (e) {
-      //
-    }
-  };
+  if (value) {
+    return { data: value as T };
+  }
 
-  useEffect(() => {
-    if (!cacheMap.has(url)) {
-      fetchData(url);
-    }
-  }, []);
+  const promise = fetch(url).then((response) => response.json());
 
-  return { data: data };
+  promise.then((data) => {
+    cacheMap.set(url, data);
+  });
+
+  throw promise;
 };
