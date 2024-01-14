@@ -4,22 +4,29 @@ interface Props {
   url: string;
 }
 
-export const useSuspense = <T>({ url }: Props) => {
-  const [data, setData] = useState<T | null>(null);
+const cacheMap = new Map<string, unknown>();
 
-  const fetchData = async () => {
+export const useSuspense = <T>({ url }: Props) => {
+  const [data, setData] = useState<T | null>((cacheMap.get(url) as T) || null);
+
+  const fetchData = async (url: string) => {
     try {
       const result = await fetch(url);
-      const data = await result.json();
-      setData(data);
+      if (result.ok) {
+        const data = await result.json();
+        cacheMap.set(url, data);
+        setData(data);
+      }
     } catch (e) {
       //
     }
   };
 
   useEffect(() => {
-    fetchData();
+    if (!cacheMap.has(url)) {
+      fetchData(url);
+    }
   }, []);
 
-  return { data };
+  return { data: data };
 };
