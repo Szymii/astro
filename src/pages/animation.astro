@@ -1,0 +1,127 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>(".nav-item");
+  const sections = document.querySelectorAll<HTMLDivElement>("section");
+  const indicator = document.querySelector<HTMLDivElement>(".indicator")!!!;
+
+  const match = window.location.href.match(/#(.*)/);
+  const defaultActiveSection = match && match[1];
+
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.intersectionRatio > 0.5) {
+          const sectionNav = document.querySelector<HTMLAnchorElement>(
+            `a[href="#${entry.target.id}"]`,
+          );
+
+          sectionNav!!!.click();
+        }
+      });
+    },
+    {
+      threshold: 0.5,
+    },
+  );
+
+  navLinks.forEach((navLink) => {
+    if (navLink.href.includes(defaultActiveSection || "section-one")) {
+      navLink.classList.add("active");
+
+      indicator.style.top = `${navLink.offsetTop + 5}px`;
+    }
+  });
+
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
+
+  navLinks.forEach((navLink) => {
+    navLink.addEventListener("click", () => {
+      navLinks.forEach((navLink) => {
+        navLink.classList.remove("active");
+      });
+      navLink.classList.add("active");
+
+      indicator.style.top = `${navLink.offsetTop + 5}px`;
+    });
+  });
+</script>
+
+<Layout title="Welcome to Astro.">
+  <nav class="nav">
+    <div class="indicator"></div>
+    <a class="nav-item" href="#section-one">1</a>
+    <a class="nav-item" href="#section-two">2</a>
+    <a class="nav-item" href="#section-three">3</a>
+    <a class="nav-item" href="#section-four">4</a>
+  </nav>
+  <section class="h-screen" id="section-one">
+    <div class="container py-6 pl-36">
+      <h2 class="text-4xl font-bold"><a href="#section-one">Section 1</a></h2>
+    </div>
+  </section>
+  <section class="h-screen" id="section-two">
+    <div class="container py-6 pl-36">
+      <h2 class="text-4xl font-bold"><a href="#section-two">Section 2</a></h2>
+    </div>
+  </section>
+  <section class="h-screen" id="section-three">
+    <div class="container py-6 pl-36">
+      <h2 class="text-4xl font-bold"><a href="#section-three">Section 3</a></h2>
+    </div>
+  </section>
+  <section class="h-screen" id="section-four">
+    <div class="container py-6 pl-36">
+      <h2 class="text-4xl font-bold"><a href="#section-four">Section 4</a></h2>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .nav {
+    position: fixed;
+    background-color: #fff;
+    color: black;
+    top: 24px;
+    left: 24px;
+    border-radius: 0.5rem;
+    box-shadow: 8px 8px 34px -8px rgba(255, 255, 255, 0.2);
+  }
+
+  .indicator {
+    position: absolute;
+    height: 50px;
+    aspect-ratio: 1;
+    z-index: 1;
+    left: 5px;
+    top: 5px;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease-out;
+    backdrop-filter: invert(100%);
+    cursor: pointer;
+  }
+
+  .indicator:hover {
+    transform: scale(0.9);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    height: 60px;
+    aspect-ratio: 1;
+  }
+
+  /* .nav-item.active {
+    color: #fff;
+    transition-delay: 0.2s;
+    transition-property: color;
+  } */
+</style>
