@@ -16,7 +16,7 @@ import {
       <p class="text-center text-xl">Explore and enjoy our services.</p>
     </div>
     <div
-      class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row"
+      class="mt-10 flex flex-col items-stretch justify-center gap-4 md:flex-row"
     >
       <Card className="w-full p-4 md:w-[300px]">
         <CardHeader>
@@ -40,6 +40,10 @@ import {
           <a class="text-blue-500 hover:underline" href="/cache">Try it</a>
         </CardFooter>
       </Card>
+    </div>
+    <div
+      class="mt-4 flex flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
       <Card className="w-full p-4 md:w-[300px]">
         <CardHeader>
           <CardTitle>Animation</CardTitle>
@@ -49,6 +53,17 @@ import {
         </CardContent>
         <CardFooter>
           <a class="text-blue-500 hover:underline" href="/animation">Try it</a>
+        </CardFooter>
+      </Card>
+      <Card className="w-full p-4 md:w-[300px]">
+        <CardHeader>
+          <CardTitle>Jotai</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Primitive and flexible state management for React</p>
+        </CardContent>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/jotai">Try it</a>
         </CardFooter>
       </Card>
     </div>

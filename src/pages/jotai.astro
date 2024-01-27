@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { StateManagement } from "@/modules/StateManagement";
+---
+
+<script>
+  import { getDefaultStore } from "jotai";
+  import { userAtom } from "../userAtom";
+
+  const defaultStore = getDefaultStore();
+
+  defaultStore.set(userAtom, { name: "Szymon" });
+</script>
+
+<Layout title="Welcome to Astro.">
+  <StateManagement client:only />
+</Layout>
