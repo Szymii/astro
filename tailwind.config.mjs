@@ -66,10 +66,17 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        rerender: {
+          from: { border: "2px solid red" },
+          to: {
+            colors: "2px solid teal",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        rerender: "rerender 1s linear",
       },
     },
   },

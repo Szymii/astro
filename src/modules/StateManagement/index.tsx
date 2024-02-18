@@ -1,19 +1,23 @@
 import { Button } from "@/system/ui/button";
 import { CounterDialog, counterState } from "./CounterDialog";
-import { getDefaultStore, useAtom } from "jotai";
+import { atom, getDefaultStore, useAtom } from "jotai";
 import { userAtom } from "@/userAtom";
-import { createContext, memo, useContext, useState } from "react";
+import { createContext, memo, useContext, useMemo, useState } from "react";
+import { generateUID } from "@/utils";
 
 const SomeContext = createContext<number>(0);
+const refreshState = atom(false);
 
 export const StateManagement = () => {
   const [state] = useAtom(counterState);
+  const [refresh, setState] = useAtom(refreshState);
+  const cashedState = useMemo(() => state, [refresh]);
   const defaultStore = getDefaultStore();
-  console.log("parent");
 
   return (
-    <div className="container mx-auto flex h-screen flex-col items-center justify-center gap-12">
+    <div className="container mx-auto flex h-screen flex-col items-center justify-center gap-12 ">
       <CounterDialog trigger={<Button>Counter {state}</Button>} />
+      <Button onClick={() => setState(!refresh)}>Refresh cashed state</Button>
 
       <div>
         This name <strong>{defaultStore.get(userAtom)?.name}</strong> is set
@@ -21,25 +25,41 @@ export const StateManagement = () => {
       </div>
 
       <SomeContext.Provider value={state}>
-        <Child />
+        <Child cashedState={cashedState} />
       </SomeContext.Provider>
     </div>
   );
 };
 
-const Child = memo(() => {
+const Child = memo(({ cashedState }: { cashedState: number }) => {
   const [state, setState] = useState(0);
-  console.log("child");
+
   return (
-    <div>
-      <Button onClick={() => setState((prev) => ++prev)}>Child {state}</Button>
+    <>
+      <div
+        key={generateUID()}
+        className="animate-rerender border-2 border-solid border-sky-200 p-10 px-20 pb-40"
+      >
+        <Button onClick={() => setState((prev) => ++prev)}>
+          Child {state}
+        </Button>
+        <div className="mt-5">Cashed state {cashedState}</div>
+      </div>
+      {/* outside div with `generateUID` to not trigger rerenders */}
       <GrandChild />
-    </div>
+    </>
   );
 });
 
 const GrandChild = memo(() => {
   const state = useContext(SomeContext);
-  console.log("grand");
-  return <div className="mt-5">GrandChild {state}</div>;
+
+  return (
+    <div
+      key={generateUID()}
+      className="animate-rerender mt-[-180px] border-2 border-solid border-sky-200 p-10"
+    >
+      GrandChild {state}
+    </div>
+  );
 });
