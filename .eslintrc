@@ -107,7 +107,8 @@
           "error",
           {
             "ignore": [
-              "@/*"
+              "@/*",
+              "astro"
             ]
           }
         ], // Disable no-unresolved rule for .astro files

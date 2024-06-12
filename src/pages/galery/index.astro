@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CardTitle, CardHeader, CardContent, Card } from "@/system/ui/card";
+import { Image } from "astro:assets";
+
+import joy from "@/assets/Joy-Division-Unknown-Pleasures.webp";
+import nirvana from "@/assets/Nirvana-Nevermind.webp";
+---
+
+<Layout title="Welcome to Astro." withTransition>
+  <main class="flex min-h-screen flex-col items-center justify-center py-2">
+    <div
+      class="mt-4 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-full p-4 ">
+        <CardHeader>
+          <CardTitle>All albums</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <a class="" href="/galery/all">
+            <Image
+              src={joy}
+              alt=""
+              width="300"
+              height="300"
+              transition:name="joy"
+            />
+          </a>
+        </CardContent>
+      </Card>
+      <Card className="w-full p-4 ">
+        <CardHeader>
+          <CardTitle>Best album</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Image
+            src={nirvana}
+            alt=""
+            width="300"
+            height="300"
+            transition:name="nirvana"
+          />
+        </CardContent>
+      </Card>
+    </div>
+  </main>
+</Layout>

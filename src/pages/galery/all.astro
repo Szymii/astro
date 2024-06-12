@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Card } from "@/system/ui/card";
+import { Image } from "astro:assets";
+
+import joy from "@/assets/Joy-Division-Unknown-Pleasures.webp";
+import nirvana from "@/assets/Nirvana-Nevermind.webp";
+import theBeatle from "@/assets/The-Beatles-Abbey-Road-Album-cover-web-optimised-820.webp";
+import theVelvet from "@/assets/the-velvet-underground-nico.webp";
+---
+
+<Layout title="Welcome to Astro." withTransition>
+  <main class="flex min-h-screen flex-col items-center justify-center py-2">
+    <div
+      class="mt-4 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-full p-4 ">
+        <Image
+          src={joy}
+          alt=""
+          width="300"
+          height="300"
+          transition:name="joy"
+        />
+      </Card>
+      <Card className="w-full p-4 ">
+        <Image
+          src={nirvana}
+          alt=""
+          width="300"
+          height="300"
+          transition:name="nirvana"
+        />
+      </Card>
+    </div>
+    <div
+      class="mt-4 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-full p-4 ">
+        <Image src={theBeatle} alt="" width="300" height="300" />
+      </Card>
+      <Card className="w-full p-4 ">
+        <Image src={theVelvet} alt="" width="300" height="300" />
+      </Card>
+    </div>
+  </main>
+</Layout>
