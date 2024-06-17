@@ -63,6 +63,13 @@ import Layout from "@/layouts/Layout.astro";
     <div class="container py-6 pl-36">
       <h2 class="text-4xl font-bold"><a href="#section-one">Section 1</a></h2>
     </div>
+    <div class="wrapper">
+      <div class="one">div 1</div>
+      <div class="two">div 2</div>
+      <div class="line"></div>
+      <div class="line1"></div>
+      <div class="line2"></div>
+    </div>
   </section>
   <section class="h-screen" id="section-two">
     <div class="container py-6 pl-36">
@@ -119,9 +126,65 @@ import Layout from "@/layouts/Layout.astro";
     aspect-ratio: 1;
   }
 
-  /* .nav-item.active {
-    color: #fff;
-    transition-delay: 0.2s;
-    transition-property: color;
-  } */
+  /* CSS Anchor Positioning */
+  .wrapper {
+    height: 600px;
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .one,
+  .two {
+    position: absolute;
+    border: 3px solid gray;
+    align-content: center;
+    text-align: center;
+  }
+
+  .one {
+    height: 60px;
+    width: 60px;
+    top: 100px;
+    left: 300px;
+    anchor-name: --one;
+  }
+
+  .two {
+    height: 160px;
+    width: 160px;
+    right: 300px;
+    bottom: 300px;
+    anchor-name: --two;
+  }
+
+  .line1,
+  .line2 {
+    position: absolute;
+    height: 2px;
+    background-color: #2d2d2d;
+  }
+
+  .line {
+    anchor-name: --line;
+    top: anchor(--one center);
+    bottom: anchor(--two center);
+    left: anchor(--one center);
+    right: anchor(--two center);
+    position: absolute;
+    background: linear-gradient(#2d2d2d, #2d2d2d) no-repeat center/2px 100%;
+  }
+
+  .line1 {
+    left: anchor(--one center);
+    right: anchor(--line center);
+    top: anchor(--line top);
+  }
+
+  .line2 {
+    right: anchor(--two center);
+    left: anchor(--line center);
+    top: anchor(--line bottom);
+  }
 </style>
