@@ -15,7 +15,7 @@ export const StateManagement = () => {
   const defaultStore = getDefaultStore();
 
   return (
-    <div className="container mx-auto flex h-screen flex-col items-center justify-center gap-12 ">
+    <div className="container mx-auto flex h-screen flex-col items-center justify-center gap-12">
       <CounterDialog trigger={<Button>Counter {state}</Button>} />
       <Button onClick={() => setState(!refresh)}>Refresh cashed state</Button>
 
@@ -57,7 +57,7 @@ const GrandChild = memo(() => {
   return (
     <div
       key={generateUID()}
-      className="animate-rerender mt-[-180px] border-2 border-solid border-sky-200 p-10"
+      className="mt-[-180px] animate-rerender border-2 border-solid border-sky-200 p-10"
     >
       GrandChild {state}
     </div>
