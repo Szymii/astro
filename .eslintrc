@@ -1,9 +1,6 @@
 {
   // Configuration for JavaScript files
-  "extends": [
-    "plugin:prettier/recommended",
-    "plugin:import/recommended"
-  ],
+  "extends": ["plugin:prettier/recommended", "plugin:import/recommended"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -15,20 +12,13 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
-    "extraFileExtensions": [
-      ".astro"
-    ] // This is a required setting in `@typescript-eslint/parser` v5.
+    "extraFileExtensions": [".astro"] // This is a required setting in `@typescript-eslint/parser` v5.
   },
   "overrides": [
     // Configuration for mjs,cjs files
     {
-      "files": [
-        "*.mjs",
-        "*.cjs"
-      ],
-      "extends": [
-        "plugin:prettier/recommended"
-      ],
+      "files": ["*.mjs", "*.cjs"],
+      "extends": ["plugin:prettier/recommended"],
       "rules": {
         "import/no-extraneous-dependencies": "off", // mjs is only used by Astro for configuration, false positive
         "import/no-unresolved": "off" // Also false positive with mjs file
@@ -37,18 +27,9 @@
     // Configuration for TypeScript files
     {
       "parser": "@typescript-eslint/parser",
-      "files": [
-        "*.ts",
-        "*.tsx"
-      ],
-      "plugins": [
-        "@typescript-eslint",
-        "react"
-      ],
-      "extends": [
-        "airbnb-typescript",
-        "plugin:prettier/recommended"
-      ],
+      "files": ["*.ts", "*.tsx"],
+      "plugins": ["@typescript-eslint", "react"],
+      "extends": ["airbnb-typescript", "plugin:prettier/recommended"],
       "parserOptions": {
         "project": "./tsconfig.json"
       },
@@ -76,17 +57,9 @@
     },
     // Configuration for Astro
     {
-      "files": [
-        "*.astro"
-      ],
-      "plugins": [
-        "@typescript-eslint",
-        "react"
-      ],
-      "extends": [
-        "airbnb-typescript",
-        "plugin:prettier/recommended"
-      ],
+      "files": ["*.astro"],
+      "plugins": ["@typescript-eslint", "react"],
+      "extends": ["airbnb-typescript", "plugin:prettier/recommended"],
       "parser": "astro-eslint-parser",
       "parserOptions": {
         "parser": "@typescript-eslint/parser"
@@ -106,18 +79,13 @@
         "import/no-unresolved": [
           "error",
           {
-            "ignore": [
-              "@/*",
-              "astro"
-            ]
+            "ignore": ["@/*", "astro"]
           }
         ], // Disable no-unresolved rule for .astro files
         "react/jsx-filename-extension": [
           1,
           {
-            "extensions": [
-              ".astro"
-            ]
+            "extensions": [".astro"]
           }
         ], // Accept jsx in astro files
         "react/destructuring-assignment": "off", // Vscode doesn't support automatically destructuring, it's a pain to add a new variable
