@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Welcome to Astro.">
+  <div class="container mx-auto pt-8">
+    <h1 class="mb-4 text-2xl font-bold">CSS :has()</h1>
+    <ul class="flex items-start gap-4 has-[:checked]:flex-col">
+      <li>
+        <label>
+          <input type="checkbox" name="direction" id="" />
+          <span>Vertical layout</span>
+        </label>
+      </li>
+      <li>
+        <a href="#react">React</a>
+      </li>
+      <li>
+        <a href="#vue">Vue</a>
+      </li>
+      <li>
+        <a href="#svelte">Svelte</a>
+      </li>
+      <li>
+        <a href="#angular">Angular</a>
+      </li>
+      <li>
+        <a href="#astro">Astro</a>
+      </li>
+    </ul>
+  </div>
+</Layout>
