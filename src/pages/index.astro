@@ -10,7 +10,9 @@ import {
 ---
 
 <Layout title="Welcome to Astro.">
-  <main class="flex min-h-screen flex-col items-center justify-center py-2">
+  <main
+    class="flex min-h-screen flex-col items-center justify-center py-2 pb-36"
+  >
     <div class="flex flex-col items-center justify-center space-y-4">
       <h1 class="text-center text-5xl font-bold">Welcome to Our Website!</h1>
       <p class="text-center text-xl">Explore and enjoy our services.</p>
@@ -102,6 +104,14 @@ import {
         </CardHeader>
         <CardFooter>
           <a class="text-blue-500 hover:underline" href="/css">Try it</a>
+        </CardFooter>
+      </Card>
+      <Card className="w-[100%] p-4">
+        <CardHeader>
+          <CardTitle>Local Storage</CardTitle>
+        </CardHeader>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/ls">Try it</a>
         </CardFooter>
       </Card>
     </div>
