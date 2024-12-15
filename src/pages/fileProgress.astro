@@ -1,0 +1,103 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  type FileEventTarget = EventTarget & { files: FileList };
+
+  const uploadButton = document.querySelector("#upload")!;
+  const fileInput = document.querySelector(
+    "input[type='file']",
+  )! as HTMLInputElement;
+  const uploadedFiles = document.querySelector("ul")!;
+  const progressBar = document.querySelector("#progress")! as HTMLElement;
+
+  fileInput.addEventListener("change", (e) => {
+    const target = e.target as FileEventTarget;
+
+    uploadedFiles.innerHTML = "";
+
+    for (const file of target.files) {
+      const li = document.createElement("li");
+      li.textContent = file.name;
+      uploadedFiles.appendChild(li);
+    }
+  });
+
+  uploadButton.addEventListener("click", () => {
+    const formData = new FormData();
+    const files = fileInput.files as FileList;
+    console.log(files);
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append(`file[${i}]`, files[i]);
+    }
+
+    uploadFileWithProgress(formData, (progress) => {
+      progressBar.style.width = `${progress}%`;
+    });
+  });
+
+  function uploadFileWithProgress(
+    formData: FormData,
+    onProgress: (progress: number) => void,
+  ) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.open("POST", "http://localhost:3000/upload", true);
+
+      // Progress event
+      xhr.upload.onprogress = (event) => {
+        console.log(event);
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          onProgress(progress);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          resolve(xhr.responseText);
+        } else {
+          reject(new Error(xhr.statusText));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Network Error"));
+
+      xhr.send(formData);
+    });
+  }
+</script>
+
+<Layout title="Welcome to Astro.">
+  <div class="container mx-auto pt-8">
+    <h1 class="text-2xl font-bold">Upload files</h1>
+    <span class="mb-4 block text-sm text-gray-500">
+      This example demonstrates how to upload files using the
+      <code>FormData</code> API. <br /> Try 1Gb file to see effect.
+    </span>
+    <input type="file" class="w-full" multiple />
+
+    <h2 class="mt-4 text-2xl font-bold">Uploaded files</h2>
+    <ul class="mt-4 list-inside list-disc"></ul>
+
+    <button
+      id="upload"
+      class="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+    >
+      Upload
+    </button>
+
+    <h2 class="mt-4 text-2xl font-bold">Progress</h2>
+    <div class="mt-4 flex items-center justify-between">
+      <div
+        id="progress"
+        class="h-2 w-1/2 rounded bg-blue-500"
+        style="width: 0%"
+      >
+      </div>
+    </div>
+  </div>
+</Layout>
