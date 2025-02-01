@@ -57,7 +57,7 @@ const GrandChild = memo(() => {
   return (
     <div
       key={generateUID()}
-      className="mt-[-180px] animate-rerender border-2 border-solid border-sky-200 p-10"
+      className="animate-rerender mt-[-180px] border-2 border-solid border-sky-200 p-10"
     >
       GrandChild {state}
     </div>
