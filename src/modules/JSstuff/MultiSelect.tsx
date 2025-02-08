@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Check, ChevronDown, Search, X } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -10,6 +9,7 @@ import {
 import { cn } from "@/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/system/ui/popover";
 import { Button } from "@/system/ui/button";
+import { useState } from "react";
 
 interface Option {
   value: string;
@@ -29,23 +29,22 @@ export function MultiSelect({
   onChange,
   placeholder = "Select options...",
 }: MultiSelectProps) {
-  const [selectedValues, setSelectedValues] =
-    React.useState<string[]>(defaultValue); // Initialize with `defaultValue`
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedValues, setSelectedValues] = useState<string[]>(defaultValue);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (value: string) => {
     const newSelectedValues = selectedValues.includes(value)
-      ? selectedValues.filter((v) => v !== value) // Deselect
-      : [...selectedValues, value]; // Select
+      ? selectedValues.filter((v) => v !== value)
+      : [...selectedValues, value];
 
     setSelectedValues(newSelectedValues);
-    onChange?.(newSelectedValues); // Notify parent component
+    onChange?.(newSelectedValues);
   };
 
   const handleRemove = (value: string) => {
     const newSelectedValues = selectedValues.filter((v) => v !== value);
     setSelectedValues(newSelectedValues);
-    onChange?.(newSelectedValues); // Notify parent component
+    onChange?.(newSelectedValues);
   };
 
   return (

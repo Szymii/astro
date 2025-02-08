@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import {
   Command,
@@ -11,6 +10,7 @@ import { cn } from "@/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/system/ui/popover";
 import { Button } from "@/system/ui/button";
 import { useAsyncMultiSelect } from "./useAsyncMultiSelect"; // Adjust the import path
+import { useEffect } from "react";
 
 interface MultiSelectProps {
   endpoint: string;
@@ -45,7 +45,7 @@ export function AsyncMultiSelect({
   });
 
   // Notify parent component when selectedValues change
-  React.useEffect(() => {
+  useEffect(() => {
     onChange?.(selectedValues);
   }, [selectedValues, onChange]);
 

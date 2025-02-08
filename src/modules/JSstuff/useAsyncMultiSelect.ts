@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 interface Option {
   value: string;
@@ -16,46 +16,40 @@ export function useAsyncMultiSelect({
   defaultValue = [],
   perPage = 10,
 }: UseAsyncMultiSelectProps) {
-  const [selectedValues, setSelectedValues] =
-    React.useState<string[]>(defaultValue);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [options, setOptions] = React.useState<Option[]>([]);
-  const [page, setPage] = React.useState(1);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [hasMore, setHasMore] = React.useState(true);
+  const [selectedValues, setSelectedValues] = useState(defaultValue);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [options, setOptions] = useState<Option[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Fetch data from the endpoint
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
       try {
         const url = `${endpoint}?search=${searchQuery}&page=${page}&perPage=${perPage}`;
         const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
+
+        if (!response.ok) throw new Error("Failed to fetch data");
+
         const data = await response.json();
-        setOptions((prevOptions) =>
-          page === 1
-            ? data.data.map((item: { id: string; name: string }) => ({
-                value: item.id,
-                label: item.name,
-              }))
-            : [
-                ...prevOptions,
-                ...data.data.map((item: { id: string; name: string }) => ({
-                  value: item.id,
-                  label: item.name,
-                })),
-              ],
+        const newOptions = data.data.map(
+          (item: { id: string; name: string }) => ({
+            value: item.id,
+            label: item.name,
+          }),
         );
-        setHasMore(data.data.length === perPage); // Check if there are more items
+
+        setOptions((prev) =>
+          page === 1 ? newOptions : [...prev, ...newOptions],
+        );
+        setHasMore(newOptions.length === perPage);
       } catch (err) {
         setError("Failed to load options");
       } finally {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         setLoading(false);
       }
     };
@@ -64,16 +58,13 @@ export function useAsyncMultiSelect({
   }, [searchQuery, page, perPage, endpoint]);
 
   const handleSelect = (value: string) => {
-    const newSelectedValues = selectedValues.includes(value)
-      ? selectedValues.filter((v) => v !== value) // Deselect
-      : [...selectedValues, value]; // Select
-
-    setSelectedValues(newSelectedValues);
+    setSelectedValues((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
   };
 
   const handleRemove = (value: string) => {
-    const newSelectedValues = selectedValues.filter((v) => v !== value);
-    setSelectedValues(newSelectedValues);
+    setSelectedValues((prev) => prev.filter((v) => v !== value));
   };
 
   const handleSearchChange = (value: string) => {
