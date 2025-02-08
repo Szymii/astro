@@ -2,6 +2,9 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
+import { upload } from "./upload.js";
+import { framework } from "./framework.js";
+
 const app = new Hono();
 
 app.use(
@@ -14,12 +17,8 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.post("/upload", async (c) => {
-  const body = await c.req.parseBody();
-  console.log(body); // File | string
-
-  return c.json({ message: "File uploaded successfully" });
-});
+app.route("/upload", upload);
+app.route("/framework", framework);
 
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);

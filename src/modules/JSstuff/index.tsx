@@ -1,3 +1,4 @@
+import { AsyncMultiSelect } from "./AsyncMultiSelect";
 import { MultiSelect } from "./MultiSelect";
 
 export const JSstuff = () => {
@@ -11,18 +12,22 @@ export const JSstuff = () => {
 
   const defaultValue = ["react", "vue"];
 
-  const handleChange = (selectedValues: string[]) => {
-    console.log("Selected Values:", selectedValues);
-  };
-
   return (
     <div className="container flex min-h-[300px] flex-col items-start gap-6 py-8">
       <h1 className="mb-4 text-xl font-bold">Select Frameworks</h1>
       <MultiSelect
         availableOptions={availableOptions}
         defaultValue={defaultValue}
-        onChange={handleChange}
+        onChange={(selectedValues: string[]) =>
+          console.log("Selected Values:", selectedValues)
+        }
         placeholder="Select frameworks..."
+      />
+      <AsyncMultiSelect
+        endpoint="http://localhost:3000/framework"
+        onChange={(selectedValues) => console.log(selectedValues)}
+        placeholder="Select frameworks..."
+        perPage={10}
       />
     </div>
   );
