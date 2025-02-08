@@ -13,7 +13,9 @@ framework.get("/", async (c) => {
   const perPage = parseInt(perPageParam) || 10;
 
   const filteredFrameworks = search
-    ? frameworks.filter((fw) => fw.name.toLowerCase().includes(search))
+    ? frameworks.filter((fw) =>
+        fw.name.toLowerCase().includes(search.toLowerCase()),
+      )
     : frameworks;
 
   // Paginacja

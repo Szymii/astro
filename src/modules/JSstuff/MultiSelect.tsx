@@ -31,13 +31,7 @@ export function MultiSelect({
 }: MultiSelectProps) {
   const [selectedValues, setSelectedValues] =
     React.useState<string[]>(defaultValue); // Initialize with `defaultValue`
-  const [searchQuery, setSearchQuery] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
-
-  // Filter options based on search query
-  const filteredOptions = availableOptions.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
 
   const handleSelect = (value: string) => {
     const newSelectedValues = selectedValues.includes(value)
@@ -93,14 +87,12 @@ export function MultiSelect({
           <div className="flex items-center border-b px-3">
             <CommandInput
               placeholder="Search options..."
-              value={searchQuery}
-              onValueChange={setSearchQuery}
               className="flex-1 outline-none"
             />
           </div>
           <CommandEmpty>No options found.</CommandEmpty>
           <CommandGroup className="max-h-[300px] overflow-y-auto">
-            {filteredOptions.map((option) => (
+            {availableOptions.map((option) => (
               <CommandItem
                 key={option.value}
                 onSelect={() => handleSelect(option.value)}

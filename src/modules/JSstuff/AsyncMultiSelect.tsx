@@ -10,18 +10,14 @@ import {
 import { cn } from "@/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/system/ui/popover";
 import { Button } from "@/system/ui/button";
-
-interface Option {
-  value: string;
-  label: string;
-}
+import { useAsyncMultiSelect } from "./useAsyncMultiSelect"; // Adjust the import path
 
 interface MultiSelectProps {
-  endpoint: string; // Endpoint to fetch data from
-  defaultValue?: string[]; // Updated to use `defaultValue`
+  endpoint: string;
+  defaultValue?: string[];
   onChange?: (selectedValues: string[]) => void;
   placeholder?: string;
-  perPage?: number; // Number of items per page
+  perPage?: number;
 }
 
 export function AsyncMultiSelect({
@@ -31,75 +27,34 @@ export function AsyncMultiSelect({
   placeholder = "Select options...",
   perPage = 10,
 }: MultiSelectProps) {
-  const [selectedValues, setSelectedValues] =
-    React.useState<string[]>(defaultValue);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [options, setOptions] = React.useState<Option[]>([]);
-  const [page, setPage] = React.useState(1);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [hasMore, setHasMore] = React.useState(true);
+  const {
+    selectedValues,
+    options,
+    loading,
+    error,
+    hasMore,
+    searchQuery,
+    handleSelect,
+    handleRemove,
+    handleSearchChange,
+    handleLoadMore,
+  } = useAsyncMultiSelect({
+    endpoint,
+    defaultValue,
+    perPage,
+  });
 
-  // Fetch data from the endpoint
+  // Notify parent component when selectedValues change
   React.useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const url = `${endpoint}?search=${searchQuery}&page=${page}&perPage=${perPage}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const data = await response.json();
-        setOptions((prev) =>
-          page === 1
-            ? data.data.map((item: { id: string; name: string }) => ({
-                value: item.id,
-                label: item.name,
-              }))
-            : [
-                ...prev,
-                ...data.data.map((item: { id: string; name: string }) => ({
-                  value: item.id,
-                  label: item.name,
-                })),
-              ],
-        );
-        setHasMore(data.data.length === perPage); // Check if there are more items
-      } catch (err) {
-        setError("Failed to load options");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [searchQuery, page, perPage, endpoint]);
-
-  const handleSelect = (value: string) => {
-    const newSelectedValues = selectedValues.includes(value)
-      ? selectedValues.filter((v) => v !== value) // Deselect
-      : [...selectedValues, value]; // Select
-
-    setSelectedValues(newSelectedValues);
-    onChange?.(newSelectedValues); // Notify parent component
-  };
-
-  const handleRemove = (value: string) => {
-    const newSelectedValues = selectedValues.filter((v) => v !== value);
-    setSelectedValues(newSelectedValues);
-    onChange?.(newSelectedValues); // Notify parent component
-  };
+    onChange?.(selectedValues);
+  }, [selectedValues, onChange]);
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
-          aria-expanded={isOpen}
           className="h-auto min-h-[40px] w-full flex-wrap justify-start gap-2 md:w-[300px]"
         >
           {selectedValues.length > 0 ? (
@@ -128,15 +83,12 @@ export function AsyncMultiSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 md:w-[300px]">
-        <Command>
+        <Command shouldFilter={false}>
           <div className="flex items-center border-b px-3">
             <CommandInput
               placeholder="Search options..."
               value={searchQuery}
-              onValueChange={(value) => {
-                setSearchQuery(value); // Update search query
-                setPage(1); // Reset to the first page
-              }}
+              onValueChange={handleSearchChange}
               className="flex-1 outline-none"
             />
           </div>
@@ -144,28 +96,45 @@ export function AsyncMultiSelect({
             {loading ? "Loading..." : error ? error : "No options found."}
           </CommandEmpty>
           <CommandGroup className="max-h-[300px] overflow-y-auto">
-            {options.map((option) => (
-              <CommandItem
-                key={option.value}
-                onSelect={() => handleSelect(option.value)}
-                className="cursor-pointer"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    selectedValues.includes(option.value)
-                      ? "opacity-100"
-                      : "opacity-0",
-                  )}
-                />
-                {option.label}
-              </CommandItem>
-            ))}
+            <CommandItem
+              key={"Sztywno"}
+              onSelect={() => handleSelect("Sztywno")}
+              className="cursor-pointer"
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  selectedValues.includes("Sztywno")
+                    ? "opacity-100"
+                    : "opacity-0",
+                )}
+              />
+              {"Sztywno"}
+            </CommandItem>
+            {options.map((option) => {
+              return (
+                <CommandItem
+                  key={option.value}
+                  onSelect={() => handleSelect(option.value)}
+                  className="cursor-pointer"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      selectedValues.includes(option.value)
+                        ? "opacity-100"
+                        : "opacity-0",
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              );
+            })}
             {hasMore && (
               <Button
                 variant="ghost"
                 className="w-full"
-                onClick={() => setPage((prev) => prev + 1)}
+                onClick={handleLoadMore}
                 disabled={loading}
               >
                 {loading ? "Loading..." : "Load More"}
