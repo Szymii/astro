@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import {
   Command,
@@ -9,45 +10,59 @@ import {
 import { cn } from "@/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/system/ui/popover";
 import { Button } from "@/system/ui/button";
-import { useAsyncMultiSelect } from "./useAsyncMultiSelect"; // Adjust the import path
-import { useEffect } from "react";
+import { useAutocomplete } from "./useAutocomplete";
+import { getFrameworks } from "./getFrameworks";
 
-interface MultiSelectProps {
-  endpoint: string;
-  defaultValue?: string[];
-  onChange?: (selectedValues: string[]) => void;
+interface Option {
+  value: number;
+  label: string;
+}
+
+interface AsyncMultiSelectProps {
+  defaultValue?: number[];
+  onChange?: (selectedValues: number[]) => void;
   placeholder?: string;
-  perPage?: number;
 }
 
 export function AsyncMultiSelect({
-  endpoint,
   defaultValue = [],
   onChange,
   placeholder = "Select options...",
-  perPage = 10,
-}: MultiSelectProps) {
+}: AsyncMultiSelectProps) {
+  const [selectedValues, setSelectedValues] = React.useState(defaultValue);
+
+  // Fetch data using useAutocomplete
   const {
-    selectedValues,
-    options,
-    loading,
+    flatData: options,
+    isNextPagePending,
+    isLoading,
+    isError,
     error,
-    hasMore,
-    searchQuery,
-    handleSelect,
-    handleRemove,
-    handleSearchChange,
-    handleLoadMore,
-  } = useAsyncMultiSelect({
-    endpoint,
-    defaultValue,
-    perPage,
+    search: handleSearchChange,
+    getNextPage: handleLoadMore,
+  } = useAutocomplete<Option, { search: string }>({
+    queryKey: "frameworks",
+    queryFn: (searchParams, pageParam) =>
+      getFrameworks(searchParams, pageParam),
+    initialSearchParams: { search: "" },
   });
 
-  // Notify parent component when selectedValues change
-  useEffect(() => {
-    onChange?.(selectedValues);
-  }, [selectedValues, onChange]);
+  // Handle selection of an option
+  const handleSelect = (value: number) => {
+    const newSelectedValues = selectedValues.includes(value)
+      ? selectedValues.filter((v) => v !== value) // Deselect
+      : [...selectedValues, value]; // Select
+
+    setSelectedValues(newSelectedValues);
+    onChange?.(newSelectedValues); // Notify parent component
+  };
+
+  // Handle removal of an option
+  const handleRemove = (value: number) => {
+    const newSelectedValues = selectedValues.filter((v) => v !== value);
+    setSelectedValues(newSelectedValues);
+    onChange?.(newSelectedValues); // Notify parent component
+  };
 
   return (
     <Popover>
@@ -87,57 +102,43 @@ export function AsyncMultiSelect({
           <div className="flex items-center border-b px-3">
             <CommandInput
               placeholder="Search options..."
-              value={searchQuery}
-              onValueChange={handleSearchChange}
+              onValueChange={(value) => handleSearchChange({ search: value })}
               className="flex-1 outline-none"
             />
           </div>
           <CommandEmpty>
-            {loading ? "Loading..." : error ? error : "No options found."}
+            {isLoading
+              ? "Loading..."
+              : isError
+                ? error?.toString()
+                : "No options found."}
           </CommandEmpty>
           <CommandGroup className="max-h-[300px] overflow-y-auto">
-            <CommandItem
-              key={"Sztywno"}
-              onSelect={() => handleSelect("Sztywno")}
-              className="cursor-pointer"
-            >
-              <Check
-                className={cn(
-                  "mr-2 h-4 w-4",
-                  selectedValues.includes("Sztywno")
-                    ? "opacity-100"
-                    : "opacity-0",
-                )}
-              />
-              {"Sztywno"}
-            </CommandItem>
-            {options.map((option) => {
-              return (
-                <CommandItem
-                  key={option.value}
-                  onSelect={() => handleSelect(option.value)}
-                  className="cursor-pointer"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedValues.includes(option.value)
-                        ? "opacity-100"
-                        : "opacity-0",
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              );
-            })}
-            {hasMore && (
+            {options.map((option) => (
+              <CommandItem
+                key={option.value}
+                onSelect={() => handleSelect(option.value)}
+                className="cursor-pointer"
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    selectedValues.includes(option.value)
+                      ? "opacity-100"
+                      : "opacity-0",
+                  )}
+                />
+                {option.label}
+              </CommandItem>
+            ))}
+            {!isNextPagePending && (
               <Button
                 variant="ghost"
                 className="w-full"
                 onClick={handleLoadMore}
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? "Loading..." : "Load More"}
+                {isLoading ? "Loading..." : "Load More"}
               </Button>
             )}
           </CommandGroup>
