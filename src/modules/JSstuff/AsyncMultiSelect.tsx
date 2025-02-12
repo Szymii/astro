@@ -11,7 +11,11 @@ import { cn } from "@/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/system/ui/popover";
 import { Button } from "@/system/ui/button";
 import { useAutocomplete } from "./useAutocomplete";
-import { getFrameworks } from "./getFrameworks";
+import {
+  getFrameworks,
+  getFrameworksUntilDefaultsFound,
+} from "./getFrameworks";
+import { useQuery } from "@tanstack/react-query";
 
 interface Option {
   value: number;
@@ -47,6 +51,37 @@ export function AsyncMultiSelect({
     initialSearchParams: { search: "" },
   });
 
+  // Fetch missing default values using React Query
+  const { data: defaultOptions } = useQuery({
+    queryKey: ["defaultFrameworks", defaultValue],
+    queryFn: async () => {
+      return getFrameworksUntilDefaultsFound(defaultValue);
+    },
+    enabled: defaultValue.length > 0, // Only run if there are default values
+  });
+
+  // Combine options and default options
+  const allOptions = React.useMemo(() => {
+    const defaultOptionsMap = new Map(
+      defaultOptions?.map((option) => [option.value, option]) || [],
+    );
+
+    // Merge options, ensuring default values are included
+    const mergedOptions = options.map((option) => ({
+      ...option,
+      ...(defaultOptionsMap.get(option.value) || {}),
+    }));
+
+    // Add missing default values
+    defaultOptions?.forEach((option) => {
+      if (!mergedOptions.some((o) => o.value === option.value)) {
+        mergedOptions.push(option);
+      }
+    });
+
+    return mergedOptions;
+  }, [options, defaultOptions]);
+
   // Handle selection of an option
   const handleSelect = (value: number) => {
     const newSelectedValues = selectedValues.includes(value)
@@ -74,7 +109,7 @@ export function AsyncMultiSelect({
         >
           {selectedValues.length > 0 ? (
             selectedValues.map((value) => {
-              const option = options.find((o) => o.value === value);
+              const option = allOptions.find((o) => o.value === value);
               return (
                 <div
                   key={value}
@@ -114,7 +149,7 @@ export function AsyncMultiSelect({
                 : "No options found."}
           </CommandEmpty>
           <CommandGroup className="max-h-[300px] overflow-y-auto">
-            {options.map((option) => (
+            {allOptions.map((option) => (
               <CommandItem
                 key={option.value}
                 onSelect={() => handleSelect(option.value)}

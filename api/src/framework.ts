@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { faker } from "@faker-js/faker";
 import { frameworksFixture } from "./freamworksFixture.js";
 
 export const framework = new Hono();
@@ -18,7 +17,6 @@ framework.get("/", async (c) => {
       )
     : frameworks;
 
-  // Paginacja
   const total = filteredFrameworks.length;
   const start = (page - 1) * perPage;
   const end = start + perPage;
@@ -31,4 +29,21 @@ framework.get("/", async (c) => {
     total_pages: Math.ceil(total / perPage),
     data: paginatedFrameworks,
   });
+});
+
+// Fetch a framework by ID
+framework.get("/:id", async (c) => {
+  const id = parseInt(c.req.param("id"));
+
+  if (isNaN(id)) {
+    return c.json({ error: "Invalid ID" }, 400);
+  }
+
+  const foundFramework = frameworks.find((fw) => fw.id === id);
+
+  if (!foundFramework) {
+    return c.json({ error: "Framework not found" }, 404);
+  }
+
+  return c.json(foundFramework);
 });
