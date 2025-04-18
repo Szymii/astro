@@ -1,0 +1,88 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Basic } from "@/modules/Tables/Basic";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/system/ui/card";
+---
+
+<Layout title="Tables">
+  <main
+    class="flex min-h-screen flex-col items-center justify-center py-2 pb-36"
+  >
+    <div
+      class="mt-10 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-[100%] p-4">
+        <CardHeader>
+          <CardTitle>Basic table</CardTitle>
+        </CardHeader>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/tables/basic"
+            >Try it</a
+          >
+        </CardFooter>
+      </Card>
+    </div>
+    <div
+      class="mt-4 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-full p-4">
+        <CardHeader>
+          <CardTitle>Virtualization</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>With tanstack virtualize</p>
+        </CardContent>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/tables/virtualize"
+            >Try it</a
+          >
+        </CardFooter>
+      </Card>
+      <Card className="w-full p-4">
+        <CardHeader>
+          <CardTitle>Drag n Drop</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>???</p>
+        </CardContent>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/tables/dnd">Try it</a>
+        </CardFooter>
+      </Card>
+    </div>
+    <div
+      class="mt-4 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row"
+    >
+      <Card className="w-full p-4">
+        <CardHeader>
+          <CardTitle>Extendable</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>With nested rows</p>
+        </CardContent>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/tables/extendable"
+            >Try it</a
+          >
+        </CardFooter>
+      </Card>
+      <Card className="w-full p-4">
+        <CardHeader>
+          <CardTitle>OG Table</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>All the stuff together</p>
+        </CardContent>
+        <CardFooter>
+          <a class="text-blue-500 hover:underline" href="/tables/og">Try it</a>
+        </CardFooter>
+      </Card>
+    </div>
+  </main>
+</Layout>
