@@ -16,6 +16,9 @@ import {
 import type { Organization } from "./Organization";
 import { Badge } from "@/system/ui/badge";
 import { organizations } from "./organizations";
+import { Button } from "@/system/ui/button";
+import { CellDialog } from "./CellDialog";
+import { useMemo, useState } from "react";
 
 const columnHelper = createColumnHelper<Organization>();
 
@@ -37,17 +40,46 @@ const columns = [
     cell: (info) =>
       info.getValue() || <div className="text-gray-400 italic">Empty</div>,
   }),
+  columnHelper.accessor("id", {
+    cell: (info) => {
+      const id = info.getValue();
+      return (
+        <CellDialog id={id}>
+          <Button variant="link">{"Click me"}</Button>
+        </CellDialog>
+      );
+    },
+  }),
 ];
 
-export const Basic = () => {
+export const Virtual = () => {
+  const [search, setSearch] = useState("");
+  const orgs = useMemo(() => {
+    return organizations;
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (search === "") return orgs;
+    return orgs.filter((org) =>
+      org.name.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [orgs, search]);
+
   const table = useReactTable({
-    data: organizations,
+    data: filtered,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    manualFiltering: true,
   });
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center py-2 pb-36">
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="search"
+      />
       <div className="mt-10 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row">
         <Table>
           <TableHeader>
