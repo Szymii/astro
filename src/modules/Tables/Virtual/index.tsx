@@ -98,7 +98,7 @@ export const Virtual = () => {
           className="relative container h-[600px] overflow-auto px-0"
           ref={tableContainerRef}
         >
-          <Table className="grid">
+          <table className="grid">
             <TableHeader className="sticky top-0 z-1 grid">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
@@ -128,7 +128,7 @@ export const Virtual = () => {
               table={table}
               tableContainerRef={tableContainerRef as RefObject<HTMLDivElement>}
             />
-          </Table>
+          </table>
         </div>
       </div>
     </main>
