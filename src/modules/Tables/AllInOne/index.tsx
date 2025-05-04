@@ -5,96 +5,111 @@ import {
   TableHeader,
   TableRow,
 } from "@/system/ui/table";
+
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   useReactTable,
+  type ExpandedState,
   type Row,
   type Table as TTable,
 } from "@tanstack/react-table";
+import { Badge } from "@/system/ui/badge";
+import type { Organization } from "./Organization";
+import { organizations } from "./organizations";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { Virtualizer, VirtualItem } from "@tanstack/react-virtual";
-import type { Organization } from "./Organization";
-import { Badge } from "@/system/ui/badge";
-import { organizations } from "./organizations";
-import { Button } from "@/system/ui/button";
-import { CellDialog } from "./CellDialog";
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 
 const columnHelper = createColumnHelper<Organization>();
 
 const columns = [
   columnHelper.accessor("name", {
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("status", {
-    cell: (info) => {
-      const status = info.getValue();
+    cell: ({ row, getValue }) => {
+      const canExpand = row.getCanExpand();
+      const depth = canExpand
+        ? `${row.depth * 24}px`
+        : `${row.depth * 24 + 16}px`;
+
       return (
-        <div>
-          {status === "active" ? (
-            <Badge variant="default">Active</Badge>
-          ) : (
-            <Badge variant="destructive">Inactive</Badge>
+        <div
+          className="flex gap-2"
+          style={{
+            paddingLeft: depth,
+          }}
+        >
+          {canExpand && (
+            <input
+              type="checkbox"
+              defaultChecked={row.getIsExpanded()}
+              onClick={row.getToggleExpandedHandler()}
+            />
           )}
+          {getValue()}
         </div>
       );
     },
   }),
+  columnHelper.accessor("type", {
+    cell: (info) => {
+      const status = info.getValue();
+
+      switch (status) {
+        case "organization":
+          return <Badge className="bg-blue-500">Org</Badge>;
+        case "group":
+          return <Badge className="bg-amber-600">Group</Badge>;
+        case "position":
+          return <Badge className="bg-emerald-600">Position</Badge>;
+        default:
+          return <Badge>Unknown</Badge>;
+      }
+    },
+  }),
+  columnHelper.accessor("status", {
+    cell: (info) => {
+      const status = info.getValue();
+
+      if (status === "active") {
+        return <Badge variant="default">Active</Badge>;
+      }
+      return <Badge variant="destructive">Inactive</Badge>;
+    },
+  }),
   columnHelper.accessor("description", {
     cell: (info) =>
-      info.getValue() ? (
-        <span className="text-wrap">{info.getValue()}</span>
-      ) : (
-        <div className="text-gray-400 italic">Empty</div>
-      ),
-  }),
-  columnHelper.accessor("id", {
-    cell: (info) => {
-      const id = info.getValue();
-      return (
-        <CellDialog id={id}>
-          <Button variant="link">{"Click me"}</Button>
-        </CellDialog>
-      );
-    },
+      info.getValue() || <div className="text-gray-400 italic">Empty</div>,
   }),
 ];
 
-export const Virtual = () => {
-  const [search, setSearch] = useState("");
-  const orgs = useMemo(() => {
-    return organizations;
-  }, []);
-
+export const AllInOne = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-
-  const filtered = useMemo(() => {
-    if (search === "") return orgs;
-    return orgs.filter((org) =>
-      org.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [orgs, search]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [data, setData] = useState(organizations);
 
   const table = useReactTable({
-    data: filtered,
+    data: data,
     columns,
+    state: {
+      expanded,
+    },
+    onExpandedChange: setExpanded,
+    getSubRows: (row) => {
+      if (row.groups && row.positions) return [...row.groups, ...row.positions];
+      if (row.groups) return row.groups;
+      if (row.positions) return row.positions;
+    },
     getCoreRowModel: getCoreRowModel(),
-    manualFiltering: true,
+    getExpandedRowModel: getExpandedRowModel(),
   });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center py-2">
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="search"
-      />
+    <main className="flex min-h-screen flex-col items-center justify-center py-2 pb-36">
       <div className="mt-10 flex w-full max-w-2xl flex-col items-stretch justify-center gap-4 md:flex-row">
         <div
-          className="relative container h-[600px] overflow-auto px-0"
+          className="relative container h-[600px] overflow-x-hidden overflow-y-auto px-0"
           ref={tableContainerRef}
         >
           <table className="grid">
@@ -202,8 +217,8 @@ const VRow = ({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) => {
   return (
     <tr
       data-index={virtualRow.index} //needed for dynamic row height measurement
-      ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
       key={row.id}
+      ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
       className="data-[state=selected]:bg-muted hover:bg-muted/50 absolute flex h-[54px] w-full border-b transition-colors"
       style={{
         transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
